@@ -1,0 +1,158 @@
+%# Resume LaTeX template — rendered by scripts/render.py #%
+\documentclass[10pt, letterpaper]{article}
+
+% ── Packages ────────────────────────────────────────────────────────────────
+\usepackage[
+  top=0.55in, bottom=0.55in,
+  left=0.65in, right=0.65in
+]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fontenc}
+\usepackage{inputenc}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{fontawesome5}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Colours & links ──────────────────────────────────────────────────────────
+\definecolor{accent}{HTML}{1A56DB}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=accent,
+  linkcolor=accent,
+  hidelinks
+}
+
+% ── Section styling ──────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\bfseries\large}
+  {}
+  {0em}
+  {}
+  [\vspace{-0.9em}\textcolor{accent}{\rule{\linewidth}{0.6pt}}\vspace{0.05em}]
+
+\titlespacing{\section}{0pt}{0.6em}{0.15em}
+
+% ── Bullet styling ───────────────────────────────────────────────────────────
+\setlist[itemize]{
+  leftmargin=1.4em,
+  itemsep=0.15em,
+  parsep=0pt,
+  topsep=0.2em,
+}
+
+% ── No page numbers ──────────────────────────────────────────────────────────
+\pagestyle{empty}
+
+\begin{document}
+
+% ── Header ───────────────────────────────────────────────────────────────────
+\begin{center}
+  {\LARGE\bfseries \VAR{ name | e }}\\[0.4em]
+  \VAR{ location | e }
+  \BLOCK{ if phone } $\cdot$ \faPhone\ \VAR{ phone | e }\BLOCK{ endif }
+  \BLOCK{ if email } $\cdot$ \href{mailto:\VAR{ email }}{\faEnvelope\ \VAR{ email | e }}\BLOCK{ endif }
+  \BLOCK{ if linkedin } $\cdot$ \href{https://\VAR{ linkedin }}{\faLinkedin}\BLOCK{ endif }
+  \BLOCK{ if github } $\cdot$ \href{https://\VAR{ github }}{\faGithub}\BLOCK{ endif }
+  \BLOCK{ if website } $\cdot$ \href{https://\VAR{ website }}{\faGlobe}\BLOCK{ endif }
+\end{center}
+
+% ── Education ────────────────────────────────────────────────────────────────
+\BLOCK{ if education }
+\section{Education}
+\BLOCK{ for edu in education }
+\noindent
+\textbf{\VAR{ edu.school | e }} \hfill \VAR{ (edu.dates or edu.year) | e }\\
+\textit{\VAR{ edu.degree | e }}
+\BLOCK{ if edu.location is defined and edu.location }\hfill \VAR{ edu.location | e }\BLOCK{ endif }
+\BLOCK{ if edu.gpa }\hfill GPA: \VAR{ edu.gpa | e }\BLOCK{ endif }
+\BLOCK{ if edu.notes }\\\textit{\VAR{ edu.notes | e }}\BLOCK{ endif }
+\BLOCK{ if not loop.last }\\[0.3em]\BLOCK{ endif }
+\BLOCK{ endfor }
+\BLOCK{ endif }
+
+% ── Experience ───────────────────────────────────────────────────────────────
+\BLOCK{ if experience }
+\section{Experience}
+\BLOCK{ for job in experience }
+\noindent
+\textbf{\VAR{ job.title | e }} \hfill \textit{\VAR{ job.dates | e }}\\
+\textit{\VAR{ job.company | e }} \hfill \VAR{ job.location | e }
+\BLOCK{ if job.bullets }
+\begin{itemize}
+\BLOCK{ for bullet in job.bullets }
+  \item \VAR{ bullet | e }
+\BLOCK{ endfor }
+\end{itemize}
+\BLOCK{ endif }
+\BLOCK{ if not loop.last }\vspace{0.3em}\BLOCK{ endif }
+\BLOCK{ endfor }
+\BLOCK{ endif }
+
+% ── Projects ─────────────────────────────────────────────────────────────────
+\BLOCK{ if projects }
+\section{Projects}
+\BLOCK{ for proj in projects }
+\noindent
+\BLOCK{ if proj.url }
+\textbf{\href{https://\VAR{ proj.url }}{\VAR{ proj.name | e }}} $|$ \emph{\VAR{ proj.tech | e }}
+\BLOCK{ else }
+\textbf{\VAR{ proj.name | e }} $|$ \emph{\VAR{ proj.tech | e }}
+\BLOCK{ endif }
+\BLOCK{ if proj.dates is defined and proj.dates }
+\hfill \textit{\VAR{ proj.dates | e }}
+\BLOCK{ endif }
+\BLOCK{ if proj.demo_url is defined and proj.demo_url }
+\\\href{https://\VAR{ proj.demo_url }}{\small Live Demo}
+\BLOCK{ if proj.url is defined and proj.url }
+ $\cdot$ \href{https://\VAR{ proj.url }}{\small GitHub}
+\BLOCK{ endif }
+\BLOCK{ elif proj.url is defined and proj.url }
+\\\href{https://\VAR{ proj.url }}{\small GitHub}
+\BLOCK{ endif }
+\BLOCK{ if proj.bullets is defined and proj.bullets }
+\begin{itemize}
+\BLOCK{ for bullet in proj.bullets }
+  \item \VAR{ bullet | e }
+\BLOCK{ endfor }
+\end{itemize}
+\BLOCK{ elif proj.description is defined and proj.description }
+\\\VAR{ proj.description | e }
+\BLOCK{ endif }
+\BLOCK{ if not loop.last }\vspace{0.3em}\BLOCK{ endif }
+\BLOCK{ endfor }
+\BLOCK{ endif }
+
+% ── Skills ───────────────────────────────────────────────────────────────────
+\BLOCK{ if skills }
+\section{Skills}
+\begin{tabular}{@{}ll}
+\BLOCK{ if skills.languages }
+\textbf{Languages} & \VAR{ skills.languages | join(', ') | e } \\
+\BLOCK{ endif }
+\BLOCK{ if skills.frameworks }
+\textbf{Frameworks} & \VAR{ skills.frameworks | join(', ') | e } \\
+\BLOCK{ endif }
+\BLOCK{ if skills.tools }
+\textbf{Tools} & \VAR{ skills.tools | join(', ') | e } \\
+\BLOCK{ endif }
+\BLOCK{ if skills.platforms }
+\textbf{Platforms} & \VAR{ skills.platforms | join(', ') | e } \\
+\BLOCK{ endif }
+\end{tabular}
+\BLOCK{ endif }
+
+% ── Certifications ───────────────────────────────────────────────────────────
+\BLOCK{ if certifications }
+\section{Certifications}
+\begin{itemize}
+\BLOCK{ for cert in certifications }
+  \item \VAR{ cert | e }
+\BLOCK{ endfor }
+\end{itemize}
+\BLOCK{ endif }
+
+\end{document}

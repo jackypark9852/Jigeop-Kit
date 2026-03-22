@@ -1,0 +1,118 @@
+# ── Personal Info ─────────────────────────────────────────────────────────────
+# Used in the resume header. Fill in your real contact info.
+name: "Your Full Name"
+email: "you@example.com"
+phone: "000-000-0000"
+location: "City, State"           # e.g. "San Francisco, CA"
+linkedin: "linkedin.com/in/your-handle"
+github: "github.com/your-username"
+website: "yoursite.com"           # optional — leave blank ("") to omit
+
+# For Chinese-market applications (optional — remove if not relevant)
+# name_chinese: ""
+# wechat: ""
+
+# ── Languages ─────────────────────────────────────────────────────────────────
+# List all languages with proficiency. Claude highlights these when relevant.
+languages:
+  - "English (Native)"
+  # - "Spanish (Fluent)"
+  # - "Mandarin Chinese (Conversational)"
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+# Keep this broad — Claude rewrites it per application. 2-3 sentences max.
+summary: >
+  Write a general description of who you are professionally. Focus on your
+  strongest identity (e.g., "Software engineer specializing in distributed systems
+  with 4 years of industry experience..."). Claude will rewrite this for each job.
+
+# ── Education ─────────────────────────────────────────────────────────────────
+education:
+  - school: "University Name"
+    degree: "Degree Title"             # e.g. "Bachelor of Science in Computer Science"
+    location: "City, State"
+    dates: "Aug. 2018 – May 2022"      # or "Expected May 2026" for current students
+    gpa: ""                            # leave blank to omit from resume
+    notes: ""                          # e.g. honors, relevant coursework
+
+  # Add more education entries as needed:
+  # - school: ""
+  #   degree: ""
+  #   location: ""
+  #   dates: ""
+
+# ── Experience ────────────────────────────────────────────────────────────────
+# Most recent first. Bullets should be achievement-oriented: what you did + the impact.
+experience:
+  - company: "Company Name"
+    title: "Your Job Title"
+    location: "City, State (or Remote)"
+    dates: "Jan. 2023 – Present"
+    bullets:
+      - "Built X using Y, resulting in Z% improvement in [metric]."
+      - "Led a team of N engineers to deliver [feature] on time, enabling [outcome]."
+      - "Reduced [pain point] from X to Y by implementing [solution]."
+
+  - company: "Previous Company"
+    title: "Previous Title"
+    location: "City, State"
+    dates: "Jun. 2021 – Dec. 2022"
+    bullets:
+      - "Describe your main responsibilities and accomplishments here."
+      - "Use numbers and concrete outcomes whenever possible."
+
+# ── Skills ────────────────────────────────────────────────────────────────────
+# Claude reorders these per application to front-load the most relevant ones.
+skills:
+  languages:   ["Python", "TypeScript", "Go"]          # programming languages
+  frameworks:  ["React", "FastAPI", "PostgreSQL"]      # libraries, frameworks, databases
+  tools:       ["Docker", "Kubernetes", "Git", "CI/CD"]
+  platforms:   ["AWS", "GCP"]                          # cloud, OS, hardware platforms
+
+# ── Projects ──────────────────────────────────────────────────────────────────
+# Include personal and academic projects that demonstrate relevant skills.
+# For external repos you contributed to (but don't own), use contributions[] below.
+projects:
+  - name: "Project Name"
+    tech: "Python, FastAPI, PostgreSQL"
+    dates: "Jan. 2024 – Mar. 2024"
+    url: "github.com/your-username/project-name"       # omit to hide link
+    demo_url: ""                                        # live demo URL (optional)
+    bullets:
+      - "What the project does and why it's interesting."
+      - "Key technical challenge you solved and how."
+      - "Performance result or user impact if applicable."
+
+  - name: "Another Project"
+    tech: "TypeScript, React, Node.js"
+    dates: "Sept. 2023 – Dec. 2023"
+    url: "github.com/your-username/another-project"
+    bullets:
+      - "Describe the core feature or algorithm you implemented."
+      - "Quantify results where possible (e.g., '10× faster than naive approach')."
+
+# ── Contributions ─────────────────────────────────────────────────────────────
+# Repos you contributed to but don't own. Same schema as projects[].
+# When including in a tailored resume, Claude slots these into the projects[] section.
+contributions:
+  - name: "Open Source Project"
+    tech: "Rust, WebAssembly"
+    dates: "Mar. 2024 – May 2024"
+    url: "github.com/owner/project-name"
+    bullets:
+      - "What you specifically built or fixed (be precise about your contribution)."
+      - "Impact of your contribution on the project."
+
+# ── Certifications ────────────────────────────────────────────────────────────
+# Optional. Remove section if empty.
+certifications:
+  # - "AWS Certified Solutions Architect – Associate (2024)"
+  # - "Google Professional Cloud Developer (2023)"
+
+# ── Resume Variant Notes ───────────────────────────────────────────────────────
+# Add notes here about which projects/bullets work best for different role types.
+# Claude reads these when deciding what to include/emphasize per application.
+# Examples:
+#   - For backend roles, lead experience with the distributed systems project.
+#   - For ML roles, include the data pipeline project even if dates are older.
+#   - For frontend roles, trim the infra bullets to make room for UI projects.

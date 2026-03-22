@@ -1,0 +1,61 @@
+%# Cover letter LaTeX template — rendered by scripts/render.py #%
+\documentclass[11pt, letterpaper]{article}
+
+\usepackage[
+  top=1.0in, bottom=1.0in,
+  left=1.1in, right=1.1in
+]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{fontenc}
+\usepackage{inputenc}
+
+\definecolor{accent}{HTML}{1A56DB}
+\hypersetup{colorlinks=true, urlcolor=accent, hidelinks}
+
+\pagestyle{empty}
+\setlength{\parskip}{0.9em}
+
+\begin{document}
+
+% ── Sender info ──────────────────────────────────────────────────────────────
+\noindent
+\textbf{\VAR{ name | e }}\\
+\VAR{ location | e }\\
+\BLOCK{ if phone }\VAR{ phone | e }\\
+\BLOCK{ endif }
+\BLOCK{ if email }\href{mailto:\VAR{ email }}{\VAR{ email | e }}\\
+\BLOCK{ endif }
+
+\vspace{0.5em}
+\noindent\VAR{ date | e }
+
+% ── Recipient ────────────────────────────────────────────────────────────────
+\vspace{0.5em}
+\noindent
+\BLOCK{ if hiring_manager }\VAR{ hiring_manager | e }\\
+\BLOCK{ endif }
+\VAR{ company | e }
+
+% ── Subject line ─────────────────────────────────────────────────────────────
+\vspace{0.5em}
+\noindent\textbf{Re: \VAR{ role | e }}
+
+% ── Greeting ─────────────────────────────────────────────────────────────────
+\noindent\VAR{ greeting | e },
+
+% ── Body ─────────────────────────────────────────────────────────────────────
+\BLOCK{ for paragraph in body }
+\VAR{ paragraph | e }
+
+\BLOCK{ endfor }
+
+% ── Closing ──────────────────────────────────────────────────────────────────
+\noindent\VAR{ closing | e },
+
+\vspace{2em}
+\noindent\VAR{ name | e }
+
+\end{document}

@@ -1,0 +1,25 @@
+# Generated output artifacts — keep directory scaffold (.gitkeep), ignore content
+output/**/*.pdf
+output/**/*.tex
+output/**/*.yaml
+output/**/*.log
+output/**/*.aux
+output/**/*.out
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Personal profile files — each user keeps their own, never committed
+profile/resume.yaml
+profile/style.md
+
+# Raw data — fetched/generated locally, not committed
+profile/raw/
+
+# Cloned repos — large, gitignored
+# (only relevant if using scripts/clone_repos.py for project analysis)
