@@ -66,6 +66,12 @@ def _build_yaml_scaffold(text: str) -> str:
         elif re.search(r"@|linkedin|github|http|\+1|\(\d{3}\)", line, re.I):
             contact_lines.append(line.strip())
 
+    # Detect probable section headers (short ALL-CAPS or Title Case lines)
+    section_pattern = re.compile(
+        r"^(experience|education|skills|projects|certifications|summary|work history|employment)",
+        re.I,
+    )
+
     body_lines = []
     for line in lines:
         if line.strip():
