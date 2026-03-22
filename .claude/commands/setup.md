@@ -139,7 +139,28 @@ Run `python scripts/clone_repos.py`
 This shallow-clones all project and contribution repos from `resume.yaml` into
 `profile/raw/projects/repos/<slug>/`.
 
-### Step 4b — Analyze each project
+### Step 4b — Confirm project list with user
+
+List every project and contribution found in `profile/resume.yaml` that has a GitHub URL,
+then ask:
+
+> "I found these projects to analyze: [list names]. Are there any important repos missing?
+> If so, paste their GitHub URLs — one per line."
+
+If the user provides additional URLs:
+1. For each URL, derive a name from the repo path (e.g., `user/MyProject` → `MyProject`).
+2. Add each as a new entry under `projects[]` in `profile/resume.yaml`:
+   ```yaml
+   - name: "MyProject"
+     url: "https://github.com/user/MyProject"
+     bullets: []
+   ```
+3. Run `python scripts/clone_repos.py` again (or clone the new repos individually) to fetch
+   the newly added repos before analysis.
+
+If the user says nothing is missing, proceed to Step 4c.
+
+### Step 4c — Analyze each project
 
 For each project and contribution entry in `profile/resume.yaml` that has a `url`
 pointing to a GitHub repo:
@@ -189,7 +210,7 @@ Each subsection: 2-4 resume-ready bullet sentences using specific technical lang
 **Concepts:** [broader categories — "real-time rendering", "GPU optimization", etc.]
 ```
 
-### Step 4c — Report
+### Step 4d — Report
 
 List each project analyzed and the path to its `analysis.md`. Note any projects skipped
 (already existed) and any skipped due to no URL or missing cloned repo.
