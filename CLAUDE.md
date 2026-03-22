@@ -143,26 +143,25 @@ certifications: [ ... ]
 
 _Guard: If `profile/resume.yaml` doesn't exist, tell the user to run `/setup` first._
 
-Triggered by: "write a cover letter for jobs/X.md", "cover letter for [company]"
+Triggered by: `/cover-letter <job>`, "write a cover letter for jobs/X.md", "cover letter for [company]"
 
-Steps:
-1. Read `profile/resume.yaml` and `profile/style.md`.
-2. Read the job description.
-3. Read `profile/cover_letter_guide.md` for cover letter writing best practices.
-4. Study `style.md` carefully — match tone, sentence length, vocabulary level,
-   and avoid anything the user says they dislike. The user's style.md preferences
-   override the cover letter guide where they conflict.
-5. Write a cover letter that:
-   - Opens with a specific hook (not "I am writing to apply...")
-   - Connects 1-2 concrete achievements to the role's needs
-   - Shows genuine interest in this company specifically
-   - Closes with a direct, confident ask
-   - Stays under one page (3-4 paragraphs)
-   - Apply the hook templates, tone guidance, and company-research strategies
-     from the cover letter guide.
-6. Write a context YAML at `output/<company>-<role>/cover-letter-context.yaml`.
-7. Run: `python scripts/render.py cover_letter output/<company>-<role>/cover-letter-context.yaml`
-8. Tell the user where the PDF landed.
+The `/cover-letter` slash command implements this workflow with an interactive
+proposal → picker → draft review → render flow (see `.claude/commands/cover-letter.md`
+for the full step-by-step).
+
+**Summary of the flow:**
+1. Read profile, style guide, cover letter guide, and job description
+2. Research the company (web search for blog, products, news, team info)
+3. If a tailored resume already exists (`resume-context.yaml`), read it to
+   use complementary angles — don't repeat the same highlights
+4. Generate a `cover-letter-proposal.yaml` with:
+   - **hooks** — 2-3 opening approaches (achievement, company-knowledge, shared-mission)
+   - **achievements** — 3-4 candidates from experience and projects
+   - **company_angles** — 2-3 company-specific things to reference
+5. Interactive picker (`select_items.py`) — user chooses hook, achievements, angle
+6. Write 3-paragraph draft following `cover_letter_guide.md` and `style.md`
+7. Present draft for user review — iterate until approved
+8. Render PDF via `render.py cover_letter`
 
 Context YAML schema:
 ```yaml
@@ -205,9 +204,11 @@ Steps:
 
 _Guard: If `profile/resume.yaml` doesn't exist, tell the user to run `/setup` first._
 
-Triggered by: "apply to jobs/X.md", "full application for [company]"
+Triggered by: `/apply <job>`, "apply to jobs/X.md", "full application for [company]"
 
-Run workflows 1, 2, and 3 in sequence. Tell the user all three outputs.
+The `/apply` slash command runs `/tailor` (resume) then `/cover-letter` (cover letter)
+in sequence for the same job. The cover letter automatically reads the resume output
+to use complementary angles. See `.claude/commands/apply.md` for the full step-by-step.
 
 ### 5. Save a New Job Description
 

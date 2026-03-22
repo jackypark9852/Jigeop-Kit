@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Interactive multi-select for resume projects, experience, and extra keywords.
+"""Interactive multi-select for proposal items (resume, cover letter, etc.).
 
 Usage:
     python scripts/select_items.py proposal.yaml -o selection.yaml
@@ -8,7 +8,10 @@ Reads a proposal YAML with pre-checked recommendations, launches an
 interactive checkbox picker in the terminal, and writes the final
 selection to a file.
 
-Proposal YAML schema:
+Each top-level key in the proposal maps to a list of items with
+{name, reason, checked} fields. The picker handles any section name.
+
+Example proposal (resume):
     experience:
       - name: "Alibaba Group"
         reason: "Unreal Engine rendering"
@@ -17,19 +20,30 @@ Proposal YAML schema:
       - name: "CUDA Path Tracer"
         reason: "matches GPU computing requirement"
         checked: true
-    keywords:           # optional — borderline ATS keywords needing user approval
+    keywords:
       - name: "OpenXR"
         reason: "JD requires XR dev; in skills_pool but no XR project yet"
         checked: true
 
-Output YAML schema (only selected items):
+Example proposal (cover letter):
+    hooks:
+      - name: "Achievement: 131× BVH speedup"
+        reason: "Strong technical hook for GPU role"
+        checked: true
+    achievements:
+      - name: "CUDA Path Tracer — 131× BVH speedup"
+        reason: "Core GPU rendering achievement"
+        checked: true
+    company_angles:
+      - name: "Their engineering blog on ray tracing"
+        reason: "Direct technical overlap"
+        checked: true
+
+Output YAML (only selected item names per section):
     experience:
       - "Alibaba Group"
     projects:
       - "CUDA Path Tracer"
-      - "Forward Plus and Clustered Deferred Renderer"
-    keywords:           # omitted if no keywords section in proposal
-      - "OpenXR"
 """
 
 import argparse
@@ -67,7 +81,7 @@ def run_checkbox(title: str, items: list[dict]) -> list[str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Interactive resume item selector")
+    parser = argparse.ArgumentParser(description="Interactive proposal item selector")
     parser.add_argument("proposal", type=Path, help="Path to proposal YAML")
     parser.add_argument(
         "--output", "-o", type=Path, required=True,
@@ -94,7 +108,7 @@ def main() -> None:
         ]
         # Launch in a new cmd.exe window and wait for it to finish
         subprocess.run(
-            ["cmd.exe", "/c", "start", "/wait", "Select Resume Items",
+            ["cmd.exe", "/c", "start", "/wait", "Select Items",
              sys.executable, str(script),
              str(args.proposal.resolve()),
              "-o", str(args.output.resolve()),
@@ -110,21 +124,19 @@ def main() -> None:
     proposal = yaml.safe_load(args.proposal.read_text(encoding="utf-8"))
     result = {}
 
-    if "experience" in proposal and proposal["experience"]:
-        result["experience"] = run_checkbox(
-            "Select experience entries:", proposal["experience"]
-        )
+    SECTION_PROMPTS = {
+        "experience": "Select experience entries to include:",
+        "projects": "Select projects to include:",
+        "keywords": "Approve extra ATS keywords (in pool, match JD, not backed by selected projects):",
+        "hooks": "Choose your opening hook approach (select 1):",
+        "achievements": "Select achievements to highlight in cover letter (select 1-2):",
+        "company_angles": "Select company-specific angles to reference (select 1):",
+    }
 
-    if "projects" in proposal and proposal["projects"]:
-        result["projects"] = run_checkbox(
-            "Select projects:", proposal["projects"]
-        )
-
-    if "keywords" in proposal and proposal["keywords"]:
-        result["keywords"] = run_checkbox(
-            "Approve extra skills keywords (in pool, match JD, not directly backed by selected projects):",
-            proposal["keywords"]
-        )
+    for key, items in proposal.items():
+        if isinstance(items, list) and items and isinstance(items[0], dict):
+            prompt = SECTION_PROMPTS.get(key, f"Select {key.replace('_', ' ')}:")
+            result[key] = run_checkbox(prompt, items)
 
     output_text = yaml.dump(result, default_flow_style=False, allow_unicode=True)
     args.output.write_text(output_text, encoding="utf-8")
