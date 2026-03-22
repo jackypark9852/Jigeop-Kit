@@ -3,8 +3,9 @@
 You are helping the user apply for jobs. Your job is to read their profile,
 understand the target role, and produce tailored application materials.
 
-**Before anything else**: check if `profile/resume.yaml` exists. If it does not, run
-**Workflow 0 (First-Time Setup)** before proceeding with any other request.
+**Before anything else**: check if `profile/resume.yaml` exists. If it does not, tell
+the user to run `/setup` to get started. Do not proceed with any other workflow until
+setup is complete.
 
 ## Repo Layout
 
@@ -58,61 +59,28 @@ Example: `profile/raw/resumes/resume.pdf` → read `profile/raw/resumes/resume.t
 
 ## Workflows
 
-### 0. First-Time Setup (Onboarding)
+### 0. First-Time Setup
 
-**Triggered automatically** when `profile/resume.yaml` does not exist.
+**Triggered by**: `/setup` slash command (or user asking "how do I get started?")
 
-This is how a new user gets started. Do not skip this — all other workflows depend on
-having a complete profile.
+Run the `/setup` slash command. It walks through all setup phases automatically:
+1. Dependency check (Python packages + pdflatex)
+2. Profile creation — opens a file picker to select existing resume(s); extracts
+   `profile/resume.yaml` from the files without asking the user to re-list anything
+3. GitHub data fetch + writing voice derivation from READMEs
+4. Deep project analysis — clones repos and generates `profile/raw/projects/<slug>/analysis.md`
+   for every project with a GitHub URL (the core differentiator of this workflow)
+5. Smoke-test render to confirm the full pipeline works
+6. Summary of available commands
 
-Steps:
-1. Greet the user in one sentence: explain this workspace helps tailor resumes and cover
-   letters for specific job applications using their profile as the source of truth.
-2. Tell them you'll ask a series of questions to build their profile. Encourage them to
-   answer in natural language — you'll format everything correctly.
-3. Ask for the following, conversationally (you can group related questions):
-   - **Personal info**: full name, email address, phone number, current city/location
-   - **Social/online presence**: LinkedIn URL, GitHub username or URL, personal website (optional)
-   - **Languages spoken**: list all with proficiency (native, fluent, conversational)
-   - **Education**: for each degree — school name, degree title, field of study, location,
-     start and end dates (or expected graduation), GPA if notable
-   - **Work experience**: for each job — company name, job title, location, start/end dates,
-     and 2–4 bullet points describing what they did (metrics and impact preferred)
-   - **Technical skills**: programming languages, frameworks/libraries, tools, platforms
-   - **Projects**: for each project — name, tech stack, GitHub URL (if public), 2–4 bullets
-     describing what it does and what's technically interesting about it
-   - **Contributions**: repos they contributed to but don't own (name, owner, your role, URL)
-   - **Target roles** (optional): what kinds of roles are they applying for? Any specific
-     industries, role types, or tracks (e.g., "mostly backend, occasionally ML")?
-4. Once you have enough information, write `profile/resume.yaml` using the schema from
-   `profile/resume.yaml.example` as your guide.
-5. Ask for their GitHub username and run:
-   `python scripts/fetch_github.py <username>`
-   This pulls their public repos, READMEs, and GitHub bio into `profile/raw/github/`.
-6. Ask two quick questions about writing voice to create `profile/style.md`:
-   - How would you describe your communication style? (e.g., direct and technical, warm and
-     narrative, concise, formal)
-   - What do you want to avoid in your cover letters? (e.g., clichés, overly humble language,
-     long paragraphs)
-   Write a `profile/style.md` with a Voice section summarizing their answers.
-7. Check that `pdflatex` is installed (needed to render PDFs):
-   - Run `pdflatex --version` to check.
-   - If missing, tell the user to install it:
-     - **Windows**: install MiKTeX from https://miktex.org/download (run the installer, enable "Install missing packages on the fly")
-     - **Mac**: `brew install --cask mactex-no-gui`
-     - **Linux**: `sudo apt install texlive-latex-base texlive-fonts-recommended texlive-latex-extra`
-   - Also install the Python dependencies: `pip install pyyaml jinja2`
-8. Confirm setup is complete. Briefly explain the 5 main workflows now available.
-
-If the user has an existing resume PDF or LinkedIn export they'd like to import instead of
-answering questions, offer to run `python scripts/ingest.py resume <path>` and use the
-extracted text as the basis for `profile/resume.yaml`, then review it with them.
+Re-running `/setup` is safe — completed phases (existing `resume.yaml`, existing `analysis.md`
+files) are skipped automatically. Run it again after adding a new project to generate its analysis.
 
 ---
 
 ### 1. Tailor a Resume
 
-_Guard: If `profile/resume.yaml` doesn't exist, run Workflow 0 first._
+_Guard: If `profile/resume.yaml` doesn't exist, tell the user to run `/setup` first._
 
 Triggered by: "tailor my resume for this job", "generate a resume for jobs/X.md"
 
@@ -173,7 +141,7 @@ certifications: [ ... ]
 
 ### 2. Write a Cover Letter
 
-_Guard: If `profile/resume.yaml` doesn't exist, run Workflow 0 first._
+_Guard: If `profile/resume.yaml` doesn't exist, tell the user to run `/setup` first._
 
 Triggered by: "write a cover letter for jobs/X.md", "cover letter for [company]"
 
@@ -217,7 +185,7 @@ closing: "Best regards"
 
 ### 3. ATS Keyword Analysis
 
-_Guard: If `profile/resume.yaml` doesn't exist, run Workflow 0 first._
+_Guard: If `profile/resume.yaml` doesn't exist, tell the user to run `/setup` first._
 
 Triggered by: "what keywords am I missing", "ATS analysis for jobs/X.md"
 
@@ -235,7 +203,7 @@ Steps:
 
 ### 4. Full Application Package
 
-_Guard: If `profile/resume.yaml` doesn't exist, run Workflow 0 first._
+_Guard: If `profile/resume.yaml` doesn't exist, tell the user to run `/setup` first._
 
 Triggered by: "apply to jobs/X.md", "full application for [company]"
 
