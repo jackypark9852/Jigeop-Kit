@@ -2,10 +2,10 @@
 """Fetch GitHub profile data and save to profile/raw/github/ as readable files.
 
 Usage:
-    python scripts/fetch_github.py your-username
-    python scripts/fetch_github.py your-username --contrib owner/repo1 owner/repo2
-    python scripts/fetch_github.py your-username --token ghp_xxx  # higher rate limit
-    python scripts/fetch_github.py your-username --force          # re-fetch everything
+    python scripts/fetch_github.py jackypark9852
+    python scripts/fetch_github.py jackypark9852 --contrib rubenaryo/Cumulus tonytgrt/Umbra
+    python scripts/fetch_github.py jackypark9852 --token ghp_xxx  # higher rate limit
+    python scripts/fetch_github.py jackypark9852 --force          # re-fetch everything
 
 Saves:
     profile/raw/github/profile.json                  -- user bio + stats
@@ -32,7 +32,7 @@ API_BASE = "https://api.github.com"
 HEADERS = {
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "job-application-workspace/1.0",
+    "User-Agent": "jigeop-profile-fetcher/1.0",
 }
 
 
@@ -157,7 +157,7 @@ def fetch_contrib(username: str, owner_repo: str, token: str, force: bool) -> di
     meta = get(f"{API_BASE}/repos/{owner}/{repo}", token)
     time.sleep(0.3)
 
-    # User's commits in this repo
+    # Jacky's commits
     commits = []
     page = 1
     while True:
@@ -179,7 +179,7 @@ def fetch_contrib(username: str, owner_repo: str, token: str, force: bool) -> di
 
     combined = {
         "repo": meta,
-        "user_commits": [
+        "jacky_commits": [
             {
                 "sha": c["sha"][:8],
                 "message": c["commit"]["message"].split("\n")[0],
@@ -250,17 +250,17 @@ def build_summary(username: str, profile: dict, repos: list, readmes: dict, cont
         lines += ["## External Contributions", ""]
         for owner_repo, data in contribs.items():
             repo_meta = data.get("repo", {})
-            commits = data.get("user_commits", [])
+            commits = data.get("jacky_commits", [])
             contributors = data.get("contributors", [])
-            user_contrib = next((c for c in contributors if c.get("login") == username), {})
-            total_commits = user_contrib.get("contributions", len(commits))
+            jacky_contrib = next((c for c in contributors if c.get("login") == username), {})
+            total_commits = jacky_contrib.get("contributions", len(commits))
 
             lines += [
                 f"### {owner_repo}",
                 f"**Description:** {repo_meta.get('description', '')}",
                 f"**Language:** {repo_meta.get('language', '')}",
                 f"**Stars:** {repo_meta.get('stargazers_count', 0)}",
-                f"**Your commits:** {total_commits}",
+                f"**Jacky's commits:** {total_commits}",
                 "",
                 "**Commit history:**",
             ]

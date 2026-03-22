@@ -4,11 +4,11 @@
 Usage:
     python scripts/clone_repos.py                     # clone all repos with URLs
     python scripts/clone_repos.py --force             # re-clone everything
-    python scripts/clone_repos.py my-project-slug    # specific slugs only
+    python scripts/clone_repos.py cuda-path-tracer    # specific slugs only
 
 Saves:
     profile/raw/projects/repos/<slug>/               -- cloned repo (depth=1)
-    profile/raw/projects/repos/<slug>/my_commits.txt -- for contrib repos only
+    profile/raw/projects/repos/<slug>/jacky_commits.txt  -- for contrib repos only
 """
 
 import argparse
@@ -23,12 +23,13 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REPOS_DIR = REPO_ROOT / "profile" / "raw" / "projects" / "repos"
 RESUME_YAML = REPO_ROOT / "profile" / "resume.yaml"
+JACKY_EMAIL_PATTERNS = ["jackypark9852", "jacky"]  # git author patterns to try
 
 
 def slug_from_url(url: str) -> str:
     """Convert a github.com URL to a filesystem slug."""
     url = url.strip().rstrip("/")
-    # e.g. github.com/owner/my-project -> my-project
+    # e.g. github.com/jackypark9852/CUDA-Path-Tracer -> cuda-path-tracer
     parts = url.split("/")
     repo_name = parts[-1] if parts else url
     return repo_name.lower().replace("_", "-")
@@ -60,13 +61,6 @@ def extract_repos(resume: dict) -> list[dict]:
     return entries
 
 
-def get_github_username(resume: dict) -> str:
-    """Extract the GitHub username from the github field in resume.yaml."""
-    github_field = resume.get("github", "")
-    # Handle formats: "github.com/username" or just "username"
-    return github_field.rstrip("/").split("/")[-1]
-
-
 def clone_repo(slug: str, url: str, force: bool) -> bool:
     """Clone repo to REPOS_DIR/<slug>. Returns True if successful."""
     dest = REPOS_DIR / slug
@@ -87,17 +81,14 @@ def clone_repo(slug: str, url: str, force: bool) -> bool:
     return True
 
 
-def save_user_commits(slug: str, username: str) -> None:
-    """Save the user's commit history + touched files for a contrib repo."""
+def save_jacky_commits(slug: str) -> None:
+    """Save Jacky's commit history + touched files for a contrib repo."""
     dest = REPOS_DIR / slug
     if not dest.exists():
         return
-    out_path = dest / "my_commits.txt"
-
-    # Try the exact username first, then a partial match as fallback
-    author_patterns = [username] if username else []
+    out_path = dest / "jacky_commits.txt"
     lines = []
-    for author in author_patterns:
+    for author in JACKY_EMAIL_PATTERNS:
         result = subprocess.run(
             ["git", "-C", str(dest), "log",
              f"--author={author}",
@@ -109,12 +100,11 @@ def save_user_commits(slug: str, username: str) -> None:
         if result.stdout.strip():
             lines.append(result.stdout.strip())
             break
-
     if lines:
         out_path.write_text("\n".join(lines), encoding="utf-8")
-        print(f"  saved: {slug}/my_commits.txt")
+        print(f"  saved: {slug}/jacky_commits.txt")
     else:
-        print(f"  [!] No commits found for '{username}' in {slug} — check git author name")
+        print(f"  [!] No commits found for jackypark9852 in {slug}")
 
 
 def main() -> None:
@@ -123,13 +113,8 @@ def main() -> None:
     parser.add_argument("--force", action="store_true", help="Re-clone even if already present")
     args = parser.parse_args()
 
-    if not RESUME_YAML.exists():
-        print("ERROR: profile/resume.yaml not found. Run onboarding first.", file=sys.stderr)
-        sys.exit(1)
-
     resume = yaml.safe_load(RESUME_YAML.read_text(encoding="utf-8"))
     all_repos = extract_repos(resume)
-    github_username = get_github_username(resume)
 
     if args.slugs:
         requested = {s.lower() for s in args.slugs}
@@ -147,7 +132,7 @@ def main() -> None:
     for repo in repos:
         ok = clone_repo(repo["slug"], repo["url"], args.force)
         if ok and repo["is_contrib"]:
-            save_user_commits(repo["slug"], github_username)
+            save_jacky_commits(repo["slug"])
 
     print(f"\nDone. Repos in: {REPOS_DIR}")
     print("Next: run project analysis agents to generate analysis.md per project.")
